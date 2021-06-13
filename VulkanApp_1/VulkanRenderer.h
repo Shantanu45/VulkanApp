@@ -23,6 +23,7 @@ private:
 	GLFWwindow* window;
 
 	VkInstance instance;
+	VkDebugUtilsMessengerEXT debugMessenger;
 
 	struct {
 		VkPhysicalDevice physicalDevice;
@@ -41,4 +42,36 @@ private:
 	bool checkDeviceSuitable(VkPhysicalDevice device);
 
 	QueueFamilyIndices getQueueFamilies(VkPhysicalDevice device);
+
+	// Validation
+	const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
+	};
+
+	#ifdef NDEBUG
+		const bool enableValidationLayers = false;
+	#else
+		const bool enableValidationLayers = true;
+	#endif
+
+	bool checkValidationLayerSupport();
+
+	// Validation Message Callbacks
+	std::vector<const char*> getRequiredExtensions();
+
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData);
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+
+	void setupDebugMessenger();
+
+	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+
+
+
+	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+
 };
+
