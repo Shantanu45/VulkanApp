@@ -61,9 +61,6 @@ void VulkanRenderer::createInstance()
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
-	// TODO: Set up Validation Layers that Instance will use
-	/*createInfo.enabledLayerCount = 0;
-	createInfo.ppEnabledLayerNames = nullptr;*/
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 	if (enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
