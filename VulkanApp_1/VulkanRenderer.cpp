@@ -174,8 +174,15 @@ bool VulkanRenderer::checkDeviceSuitable(VkPhysicalDevice device)
 	QueueFamilyIndices indices = getQueueFamilies(device);
 
 	bool extensionSuported = checkDeviceExtensionSupport(device);
+
+	bool swapChainValid = 0;
+	if (extensionSuported)
+	{
+		SwapChainDetails swapChainDetails = getSwapChainDetails(device);
+		swapChainValid = !swapChainDetails.presentationModes.empty() && !swapChainDetails.formats.empty();
+	}
 	
-	return indices.isValid() && extensionSuported;
+	return indices.isValid() && extensionSuported && swapChainValid;
 }
 
 bool VulkanRenderer::checkDeviceExtensionSupport(VkPhysicalDevice device)
@@ -246,6 +253,33 @@ QueueFamilyIndices VulkanRenderer::getQueueFamilies(VkPhysicalDevice device)
 		i++;
 	}
 	return indices;
+}
+
+SwapChainDetails VulkanRenderer::getSwapChainDetails(VkPhysicalDevice device)
+{
+	SwapChainDetails swapChainDetails;
+
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &swapChainDetails.surfaceCapabilities);
+
+	uint32_t formatCount = 0;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+	if (formatCount != 0)
+	{
+		swapChainDetails.formats.resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, swapChainDetails.formats.data());
+	}
+
+	uint32_t presentaionCount = 0;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentaionCount, nullptr);
+
+	if (presentaionCount != 0)
+	{
+		swapChainDetails.presentationModes.resize(presentaionCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentaionCount, swapChainDetails.presentationModes.data());
+	}
+
+	return swapChainDetails;
 }
 
 bool VulkanRenderer::checkInstanceExtensionSupport(std::vector<const char*>* checkExtensions)

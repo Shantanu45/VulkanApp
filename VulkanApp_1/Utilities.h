@@ -16,3 +16,10 @@ struct QueueFamilyIndices
 		return graphicsFamily >= 0 && presentationFamily >= 0;
 	}
 };
+
+struct SwapChainDetails
+{
+	VkSurfaceCapabilitiesKHR surfaceCapabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentationModes;
+};
