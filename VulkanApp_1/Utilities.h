@@ -23,3 +23,9 @@ struct SwapChainDetails
 	std::vector<VkSurfaceFormatKHR> formats;
 	std::vector<VkPresentModeKHR> presentationModes;
 };
+
+struct SwapchainImage
+{
+	VkImage image;
+	VkImageView imageView;
+};
