@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <vector>
 #include <set>
+#include <algorithm>
 
 #include "Utilities.h"
 
@@ -33,10 +34,12 @@ private:
 	VkQueue graphicsQueue;
 	VkQueue presentationQueue;
 	VkSurfaceKHR surface;
+	VkSwapchainKHR swapchain;
 
 	void createInstance();
 	void createLogicalDevice();
 	void createSurface();
+	void createSwapChain();
 	
 	void getPhysicalDevice();
 
@@ -72,6 +75,11 @@ private:
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+
+
+	VkSurfaceFormatKHR chooseBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
+	VkPresentModeKHR chooseBestPresentationMode(const std::vector<VkPresentModeKHR> presentationModes);
+	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& surfaceCapabilities);
 
 };
 
