@@ -25,6 +25,8 @@ public:
 private:
 	GLFWwindow* window;
 
+	int currentFrame = 0;
+
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
 
@@ -54,8 +56,9 @@ private:
 	VkExtent2D swapChainExtent;
 
 	// - Synchronisaition
-	VkSemaphore imageAvailable;
-	VkSemaphore renderFinished;
+	std::vector<VkSemaphore> imageAvailable;
+	std::vector<VkSemaphore> renderFinished;
+	std::vector<VkFence> drawFences;
 
 	// Vulkan functions
 	
