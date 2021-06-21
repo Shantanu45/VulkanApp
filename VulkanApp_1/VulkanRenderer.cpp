@@ -19,6 +19,7 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createCommandPool();
 		createCommandBuffers();
 		recordCommands();
+		createSynchronisation();
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());
@@ -28,8 +29,60 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 	return 0;
 }
 
+void VulkanRenderer::draw()
+{
+	uint32_t imageIndex;
+	VkResult result = vkAcquireNextImageKHR(mainDevice.logicalDevice, swapchain, std::numeric_limits<uint64_t>::max(), 
+		imageAvailable, VK_NULL_HANDLE, &imageIndex);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Cannot acquire next image");
+	}
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = &imageAvailable;
+	VkPipelineStageFlags waitStage[] = {
+	VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+	};
+	submitInfo.pWaitDstStageMask = waitStage;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = &renderFinished;
+
+	// Submit command buffer to queue
+	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to submit Command Buffer to Queue!");
+	}
+
+	// -- PRESENT RENDERED IMAGE TO SCREEN --
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;										// Number of semaphores to wait on
+	presentInfo.pWaitSemaphores = &renderFinished;			// Semaphores to wait on
+	presentInfo.swapchainCount = 1;											// Number of swapchains to present to
+	presentInfo.pSwapchains = &swapchain;									// Swapchains to present images to
+	presentInfo.pImageIndices = &imageIndex;								// Index of images in swapchains to present
+
+
+
+	// Present image
+	result = vkQueuePresentKHR(presentationQueue, &presentInfo);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to present Image!");
+	}
+}
+
 void VulkanRenderer::cleanup()	
 {
+	vkDestroySemaphore(mainDevice.logicalDevice, renderFinished, nullptr);
+	vkDestroySemaphore(mainDevice.logicalDevice, imageAvailable, nullptr);
+	
 	vkDestroyCommandPool(mainDevice.logicalDevice, graphicsCommandPool, nullptr);
 	for(auto framebuffer:swapChainFramebuffers)
 	{
@@ -539,6 +592,20 @@ void VulkanRenderer::createCommandBuffers()
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate Command Buffers");
+	}
+}
+
+void VulkanRenderer::createSynchronisation()
+{
+	// Semaphore creation information
+	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
+	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	if (vkCreateSemaphore(mainDevice.logicalDevice, &semaphoreCreateInfo, nullptr, &imageAvailable) != VK_SUCCESS ||
+		vkCreateSemaphore(mainDevice.logicalDevice, &semaphoreCreateInfo, nullptr, &renderFinished) != VK_SUCCESS
+		)
+	{
+		throw std::runtime_error("Failed to create a Semaphore!");
 	}
 }
 

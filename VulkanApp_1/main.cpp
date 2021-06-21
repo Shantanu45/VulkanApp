@@ -32,13 +32,14 @@ int main()
 	{
 		return EXIT_FAILURE;
 	}
-	vulkanRenderer.cleanup();
 	// Loop until closed
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+		vulkanRenderer.draw();
 	}
 
+	vulkanRenderer.cleanup();
 	// Destroy GLFW window and stop GLFW
 	glfwDestroyWindow(window);
 	glfwTerminate();
