@@ -80,6 +80,8 @@ void VulkanRenderer::draw()
 
 void VulkanRenderer::cleanup()	
 {
+	vkDeviceWaitIdle(mainDevice.logicalDevice);
+	
 	vkDestroySemaphore(mainDevice.logicalDevice, renderFinished, nullptr);
 	vkDestroySemaphore(mainDevice.logicalDevice, imageAvailable, nullptr);
 	
