@@ -27,9 +27,10 @@ private:
 
 	int currentFrame = 0;
 
+	// Vulkan Components
+	// - Main
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
-
 	struct {
 		VkPhysicalDevice physicalDevice;
 		VkDevice logicalDevice;
@@ -60,8 +61,8 @@ private:
 	std::vector<VkSemaphore> renderFinished;
 	std::vector<VkFence> drawFences;
 
-	// Vulkan functions
-	
+	// Vulkan Functions
+	// - Create Functions
 	void createInstance();
 	void createLogicalDevice();
 	void createSurface();
@@ -75,49 +76,49 @@ private:
 
 	// - Record Function
 	void recordCommands();
-	
+
+	// - Get Functions
 	void getPhysicalDevice();
 
+	// - Support Functions
+	// -- Checker Functions
 	bool checkInstanceExtensionSupport(std::vector<const char*>* checkExtensions);
-	bool checkDeviceSuitable(VkPhysicalDevice device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+	bool checkDeviceSuitable(VkPhysicalDevice device);
+	bool checkValidationLayerSupport();
 
+	// -- Getter Functions
 	QueueFamilyIndices getQueueFamilies(VkPhysicalDevice device);
 	SwapChainDetails getSwapChainDetails(VkPhysicalDevice device);
 
-	// Validation
-	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+	// -- Choose Functions
+	VkSurfaceFormatKHR chooseBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
+	VkPresentModeKHR chooseBestPresentationMode(const std::vector<VkPresentModeKHR> presentationModes);
+	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& surfaceCapabilities);
 
+	// -- Create Functions
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+	VkShaderModule createShaderModule(const std::vector<char>& code);
+
+	std::vector<const char*> getRequiredExtensions();
+	
+	// Validation
 	#ifdef NDEBUG
 		const bool enableValidationLayers = false;
 	#else
 		const bool enableValidationLayers = true;
 	#endif
-
-	bool checkValidationLayerSupport();
+	
+	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
 	// Validation Message Callbacks
-	std::vector<const char*> getRequiredExtensions();
-
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 															VkDebugUtilsMessageTypeFlagsEXT messageType,
 															const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 															void* pUserData);
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-
 	void setupDebugMessenger();
-
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-
-
-	VkSurfaceFormatKHR chooseBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
-	VkPresentModeKHR chooseBestPresentationMode(const std::vector<VkPresentModeKHR> presentationModes);
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& surfaceCapabilities);
-
-	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-
-	VkShaderModule createShaderModule(const std::vector<char> &code);
 };
 

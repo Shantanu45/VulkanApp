@@ -23,9 +23,9 @@ struct QueueFamilyIndices
 
 struct SwapChainDetails
 {
-	VkSurfaceCapabilitiesKHR surfaceCapabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentationModes;
+	VkSurfaceCapabilitiesKHR surfaceCapabilities;			// Surface properties, e.g. image size/extent
+	std::vector<VkSurfaceFormatKHR> formats;				// Surface image formats, e.g. RGBA and size of each colour
+	std::vector<VkPresentModeKHR> presentationModes;		// How images should be presented to screen
 };
 
 struct SwapchainImage
@@ -36,6 +36,9 @@ struct SwapchainImage
 
 static std::vector<char> readFile(const std::string &filename)
 {
+	// Open stream from given file
+	// std::ios::binary tells stream to read file as binary
+	// std::ios::ate tells stream to start reading from end of file
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
 
 	if (!file.is_open())
@@ -46,7 +49,10 @@ static std::vector<char> readFile(const std::string &filename)
 	size_t fileSize = (size_t)file.tellg();
 	std::vector<char> fileBuffer(fileSize);
 
+	// Move read position (seek to) the start of the file
 	file.seekg(0);
+
+	// Read the file data into the buffer (stream "fileSize" in total)
 	file.read(fileBuffer.data(), fileSize);
 
 	file.close();
