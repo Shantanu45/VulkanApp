@@ -566,6 +566,7 @@ void VulkanRenderer::createSwapChain()
 
 void VulkanRenderer::createRenderPass()
 {
+	// it is for render pass, when we create subpass we declare which color attachment that it should bind to
 	#pragma region Color_Attachment
 	
 	// Color attachment of render pass
@@ -578,9 +579,9 @@ void VulkanRenderer::createRenderPass()
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
 	// Framebuffer data will be stored as an image, but image can be given different data layouts
-	// to give optimal use fo cretain operations
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	// to give optimal use fo certain operations
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;			// Image data layout before render pass starts
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;		// Image data layout after render pass (to change to)
 	#pragma endregion 
 
 	#pragma region Color_Attachment_Reference
@@ -593,7 +594,7 @@ void VulkanRenderer::createRenderPass()
 	#pragma region Subpass
 	
 	VkSubpassDescription subpass = {};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;		// to bind to Garphics pipeline
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentReference;
 	#pragma endregion
@@ -935,6 +936,7 @@ void VulkanRenderer::createSynchronisation()
 
 #pragma region Record
 
+// Recording the command buffers not executing them, we have to take these recorded command buffers, submit them to the queue and queue itself executes them.
 void VulkanRenderer::recordCommands()
 {
 	VkCommandBufferBeginInfo bufferBeginInfo = {};
